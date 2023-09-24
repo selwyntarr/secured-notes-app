@@ -1,17 +1,56 @@
-import { StyleSheet, Text, View } from 'react-native'
-import { color } from 'react-native-elements/dist/helpers';
+import { StyleSheet, Text, View, Pressable} from 'react-native';
 
-export default function Header(){
+import { AntDesign } from '@expo/vector-icons';
+
+import * as colors from '../colorPalette.js';
+
+function Header(){
     return (
         <View style={styles.container}>
-            <Text>Home</Text>
+            <Text style={styles.heading}>Home</Text>
+            <Pressable style={styles.addRecordContainer}>
+                <Text style={styles.addRecordLabel}>Add Record</Text>
+                <AntDesign name={'pluscircle'} size={'6vw'} color={colors.brownLight}/>
+            </Pressable>
         </View>
     );
 }; 
 
 const styles = StyleSheet.create({
     container:{
-        height: '10%',
-        backgroundColor: '#fff1ce50',
+        backgroundColor: colors.beigeLight,
+        height: '12%',
+        marginHorizontal: '5%',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+
+        padding: '5vw',
+
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        
     },
+    heading:{
+        flex: 1,
+        fontSize: '7vw',
+        fontWeight: 800,
+        color: colors.brown,
+    },
+    addRecordContainer:{
+        backgroundColor: colors.greyLight,
+        borderRadius: '15px',
+
+        padding: '1vw',
+
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    addRecordLabel:{
+        margin: '1vw',
+        fontWeight: 600,
+        fontColor: 'colors.brownLight',
+    }
 });
+
+export default Header;
