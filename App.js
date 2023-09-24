@@ -22,7 +22,7 @@ export default function App() {
 
   return (
     <View style={styles.container} onLayout={handleOnLayout}>
-      <Text style={styles.changeFont}>Open up App.js to start working on your app!</Text>
+      <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -34,8 +34,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  changeFont:{
     fontFamily: 'OpenSans-Regular',
   }
 });
