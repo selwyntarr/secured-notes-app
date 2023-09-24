@@ -4,10 +4,10 @@ import { AntDesign } from '@expo/vector-icons';
 
 import * as colors from '../colorPalette.js';
 
-function Header(){
+function Header(props){
     return (
         <View style={styles.container}>
-            <Text style={styles.heading}>Home</Text>
+            <Text style={styles.heading}>{props.label}</Text>
             <Pressable style={styles.addRecordContainer}>
                 <Text style={styles.addRecordLabel}>Add Record</Text>
                 <AntDesign name={'pluscircle'} size={'6vw'} color={colors.brownLight}/>
