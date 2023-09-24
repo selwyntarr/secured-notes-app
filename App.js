@@ -38,11 +38,11 @@ export default function App() {
     )
   }
 
-  const ProfileScreen = ({navigation, route}) => {
+  const RecordsScreen = ({navigation, route}) => {
     return (
       <View style={styles.container} onLayout={handleOnLayout}>
         <Header label={'Records'}/>
-        <Text style={styles.center_text}>Profile</Text>
+        <Text style={styles.center_text}>Records</Text>
       </View>
     )
   }
@@ -103,7 +103,7 @@ export default function App() {
         })}
         >
         <Tab.Screen name="Home" component={HomeScreen}/>
-        <Tab.Screen name="Records" component={ProfileScreen} />
+        <Tab.Screen name="Records" component={RecordsScreen} />
         <Tab.Screen name="Search" component={SearchScreen} />
         <Tab.Screen name="Settings" component={SettingScreen} />
       </Tab.Navigator>
