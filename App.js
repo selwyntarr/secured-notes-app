@@ -1,8 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
+
 import { StyleSheet, Text, View } from 'react-native';
-import OpenSans from './globals/fonts';
-import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
+
+import OpenSans from './globals/fonts';
+
+import * as SplashScreen from 'expo-splash-screen';
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,6 +26,7 @@ export default function App() {
 
   return (
     <View style={styles.container} onLayout={handleOnLayout}>
+
       <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" />
     </View>
