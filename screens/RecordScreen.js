@@ -1,8 +1,11 @@
 import React from 'react';
 import { Image, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Pressable } from 'react-native';
 import Colors from '../components/Colors';
+import { db } from '../firebaseConfig';
 
 const RecordScreen = ({ navigation }) => {
+
+  
 
   const handleAddRecord = () => {
     navigation.navigate('AddRecord')

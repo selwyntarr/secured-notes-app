@@ -16,7 +16,6 @@ const LoginScreen = ({navigation}) => {
     }
   };
 
-
   const handleBiometric = async () => {
     checkSupportedAuthentication()
     if (fingerprintAvailable === true){
@@ -25,6 +24,7 @@ const LoginScreen = ({navigation}) => {
 
         if (results.success){
           console.log('Success: Login via fingerprint!')
+          navigation.replace('App');
         } else {
           console.log('Error: ', results.success)
         }
@@ -37,7 +37,6 @@ const LoginScreen = ({navigation}) => {
   const handleLogin = () => {
     navigation.replace('App');
   };   
-
 
   const handleRegister = () => {
     navigation.navigate('Register')
