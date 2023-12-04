@@ -5,14 +5,22 @@ import { db } from '../firebaseConfig';
 
 const RecordScreen = ({ navigation }) => {
 
-  
-
   const handleAddRecord = () => {
     navigation.navigate('AddRecord')
   }
 
-  const handleAccounts = () => {
-    navigation.navigate('Accounts')
+  const handleAllRecords = ({type}) => {
+    if (type === 'all') {
+      navigation.navigate('AllRecords', {type: 'all'})
+    } else if ( type === 'favorite' ) {
+      navigation.navigate('AllRecords', {type: 'favorite'})
+    } else if ( type === 'bank' ) {
+      navigation.navigate('AllRecords', {type: 'bank'})
+    } else if ( type === 'account' ) {
+      navigation.navigate('AllRecords', {type: 'account'})
+    } else if ( type === 'others' ) {
+      navigation.navigate('AllRecords', {type: 'others'})
+    }
   }
 
   return (
@@ -32,31 +40,31 @@ const RecordScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.card}>
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => handleAllRecords({type: 'all'})}>
             <Image source={require('../assets/Sort.png')} resizeMode='contain'
               style={{height: 30, width: 30}}/>
             <Text style = {{fontSize: 12, fontWeight: 'bold'}}>All Records</Text>
           </Pressable>
 
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => handleAllRecords({type: 'favorite'})}>
             <Image source={require('../assets/Star.png')} resizeMode='contain'
               style={{height: 30, width: 30}}/>
             <Text style = {{fontSize: 12, fontWeight: 'bold'}}>Favorites</Text>
           </Pressable>
 
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => handleAllRecords({type: 'bank'})}>
             <Image source={require('../assets/Work.png')} resizeMode='contain'
               style={{height: 30, width: 30}}/>
             <Text style = {{fontSize: 12, fontWeight: 'bold'}}>Banks</Text>
           </Pressable>
 
-          <Pressable style={styles.row} onPress={handleAccounts}>
+          <Pressable style={styles.row} onPress={() => handleAllRecords({type: 'account'})}>
             <Image source={require('../assets/User.png')} resizeMode='contain'
               style={{height: 30, width: 30}}/>
             <Text style = {{fontSize: 12, fontWeight: 'bold'}}>Accounts</Text>
           </Pressable>
 
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => handleAllRecords({type: 'others'})}>
             <Image source={require('../assets/More.png')} resizeMode='contain'
               style={{height: 30, width: 30}}/>
             <Text style = {{fontSize: 12, fontWeight: 'bold'}}>Others</Text>
