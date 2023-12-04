@@ -135,7 +135,7 @@ const RegisterScreen = ({navigation}) => {
 
             <View style={{flexDirection: 'row', marginTop: 5}}>
               <Text>Have an account? </Text>
-              <Pressable onPress={handleRegister}>
+              <Pressable onPress={() => {navigation.replace('Login');}}>
                 <Text style={{color: 'blue'}}>Login here.</Text>
               </Pressable>
             </View>
