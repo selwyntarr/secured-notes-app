@@ -10,7 +10,7 @@ const SearchScreen = ({ navigation }) => {
 
   const data = [
     { id: '1', cred: "5434 5345 2312 4124" , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
-    { id: '2', cred: "John.Doe@gmail.com" , title: 'Gmail', asset: require('../assets/BDO.png') },
+    { id: '2', cred: "John.Doe@gmail.com" , title: 'Gmail', asset: require('../assets/gmail.png') },
     { id: '3', cred: "John.Doe@facebook.com" , title: 'Facebook', asset: require('../assets/Facebook.png') },
   ];
 
