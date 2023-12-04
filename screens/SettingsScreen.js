@@ -36,7 +36,7 @@ const SettingsScreen = ({ navigation }) => {
 
       <View style={styles.header}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.headerText}>Search</Text>
+          <Text style={styles.headerText}>Settings</Text>
           <Pressable style={styles.addBtn} onPress={handleLogout}>
 
             <Text style={{fontSize: 12}}>Logout</Text>
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerText: {
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-end',
     fontSize: 25,
   },
   card: {
