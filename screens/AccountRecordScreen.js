@@ -15,7 +15,7 @@ const AccountRecordScreen = ({ route, navigation }) => {
             <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={styles.headerText}>Record</Text>
               <Pressable style={styles.addBtn} onPress={()=>{
-                navigation.navigate('Accounts')
+                navigation.goBack()
               }}>
     
                 <Text style={{fontSize: 12}}>Cancel</Text>
@@ -47,7 +47,7 @@ const AccountRecordScreen = ({ route, navigation }) => {
 
           <View style={styles.input_box}>
             <Text style={{fontSize:12}}>Password: </Text>
-            <TextInput value = {data.pass} placeholder="Password" multiline={false} style={styles.input} />
+            <TextInput value = {data.pass} secureTextEntry = {true} placeholder="Password" multiline={false} style={styles.input} />
           </View>
 
             <Pressable style={styles.btn} onPress={handleFavorite}>
