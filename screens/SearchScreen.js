@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, Image, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Pressable, TextInput } from 'react-native';
+import { FlatList, Image, View, Text, StyleSheet, SafeAreaView, Pressable, TextInput } from 'react-native';
 import Colors from '../components/Colors';
 
 const SearchScreen = ({ navigation }) => {
@@ -9,19 +9,21 @@ const SearchScreen = ({ navigation }) => {
   }
 
   const data = [
-    { id: '1', cred: "5434 5345 2312 4124" , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
-    { id: '2', cred: "John.Doe@gmail.com" , title: 'Gmail', asset: require('../assets/gmail.png') },
-    { id: '3', cred: "John.Doe@facebook.com" , title: 'Facebook', asset: require('../assets/Facebook.png') },
+    { id: '1', cred: "5434 5345 2312 4124",pass: '123123', title: 'Banco De Oro', asset: require('../assets/BDO.png') },
+    { id: '2', cred: "John.Doe@gmail.com",pass: '123123', title: 'Gmail', asset: require('../assets/gmail.png') },
+    { id: '3', cred: "John.Doe@facebook.com",pass: '123123', title: 'Facebook', asset: require('../assets/Facebook.png') },
   ];
 
   const renderItem = ({ item }) => (
-    <View style={styles.rowItems}>
+    <Pressable style={styles.rowItems} onPress={()=>{
+      navigation.navigate('AccountsRecord', item)
+    }}>
       <Image source={item.asset} style={{height: 40, width: 40}} resizeMode='contain'/>
       <View>
         <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
         <Text style = {{fontSize: 10}}>{item.cred}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 
   return (
