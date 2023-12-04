@@ -3,16 +3,11 @@ import { View, Text, Image, TextInput, SafeAreaView, Pressable, StyleSheet } fro
 import { Dropdown } from 'react-native-element-dropdown';
 import Colors from '../components/Colors';
 
-const AccountRecordInputScreen = ({ navigation }) => {
-  const data = [
-    { label: 'Banco De Oro', value: 'Banco De Oro' },
-    { label: 'Union Bank', value: 'Union Bank' },
-    { label: 'Land Bank', value: 'Land Bank' },
-    { label: 'Security Bank', value: 'Security Bank' },
-  ];
+const AccountRecordInputScreen = ({route, navigation }) => {
 
-  const [value, setValue] = useState(null);
-  const [selectedBank, setSelectedBank] = useState('Banco De Oro');
+  const data = route.params.data
+
+  const [selectedBank, setSelectedBank] = useState(route.params.type);
 
   const determineBankImage = (bankName) => {
     switch (bankName) {
@@ -24,6 +19,22 @@ const AccountRecordInputScreen = ({ navigation }) => {
         return require('../assets/banks/LandBank.png');
       case 'Security Bank':
         return require('../assets/banks/SecurityBank.png');
+      case 'Facebook':
+        return require('../assets/Socials/Facebook.png');
+      case 'Instagram':
+        return require('../assets/Socials/Insta.png');
+      case 'Gmail':
+        return require('../assets/Socials/Gmail.png');
+      case 'Twitter':
+        return require('../assets/Socials/Twitter.png');
+      case 'Gcash':
+        return require('../assets/Others/Gcash.png');
+      case 'Maya':
+        return require('../assets/Others/Maya.png');
+      case 'Pagibig':
+        return require('../assets/Others/Pagibig.png');
+      case 'PhilHealth':
+        return require('../assets/Others/PhilHealth.png');
       default:
         return require('../assets/banks/BDO.png');
     }
@@ -58,9 +69,8 @@ const AccountRecordInputScreen = ({ navigation }) => {
             labelField="label"
             valueField="value"
             placeholder="Select Bank"
-            value={value}
+            value={route.params.type}
             onChange={(item) => {
-              setValue(item.value);
               setSelectedBank(item.value);
             }}
           />
