@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TextInput, SafeAreaView, Pressable, StyleSheet } from 'react-native';
+import { TouchableOpacity, View, Text, Image, TextInput, SafeAreaView, Pressable, StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import Colors from '../components/Colors';
 
@@ -39,6 +39,12 @@ const AccountRecordInputScreen = ({route, navigation }) => {
         return require('../assets/banks/BDO.png');
     }
   };
+
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  }
 
   const bankImage = determineBankImage(selectedBank);
 
@@ -83,10 +89,17 @@ const AccountRecordInputScreen = ({route, navigation }) => {
           <TextInput placeholder="Username or email" multiline={false} style={styles.input} />
         </View>
 
-        <View style={styles.input_box}>
-          <Text style={{ fontSize: 12 }}>Password: </Text>
-          <TextInput placeholder="Password" multiline={false} style={styles.input} />
-        </View>
+        <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
+            <TextInput placeholder="Confirm Password" secureTextEntry={!isPasswordVisible} 
+              multiline={false} style={{...styles.input, flex: 1}}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+            >
+              <Image source={isPasswordVisible ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
+          </View>
 
         <Pressable style={styles.btn}>
           <Text style={{ color: Colors.white }}>Add Record</Text>
