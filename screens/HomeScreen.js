@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: 15
   },
   textDivider: {
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },
