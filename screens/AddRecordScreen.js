@@ -37,7 +37,12 @@ const AddRecordsScreen = ({ navigation }) => {
                 <Image source={require('../assets/banks/SecurityBank.png')} style={{height:65,width: 65}} resizeMode='contain'/>
             </View>
             <Pressable style={styles.btn} onPress={()=>{
-              navigation.navigate('AccountRecordInput')
+              navigation.navigate('AccountRecordInput', {type: 'Banco De Oro', data: 
+              [{ label: 'Banco De Oro', value: 'Banco De Oro' },
+              { label: 'Union Bank', value: 'Union Bank' },
+              { label: 'Land Bank', value: 'Land Bank' },
+              { label: 'Security Bank', value: 'Security Bank' }]
+            })
             }}>
               <Text style={{color: Colors.white}}>Banks</Text>
             </Pressable>
@@ -49,7 +54,14 @@ const AddRecordsScreen = ({ navigation }) => {
             <Image source={require('../assets/Socials/Gmail.png')} style={{height:65,width: 65}} resizeMode='contain'/>
             <Image source={require('../assets/Socials/Twitter.png')} style={{height:65,width: 65}} resizeMode='contain'/>
           </View>
-          <Pressable style={styles.btn}>
+          <Pressable style={styles.btn}onPress={()=>{
+              navigation.navigate('AccountRecordInput', {type: 'Facebook', data: 
+              [{ label: 'Facebook', value: 'Facebook' },
+              { label: 'Instagram', value: 'Instagram' },
+              { label: 'Gmail', value: 'Gmail' },
+              { label: 'Twitter', value: 'Twitter' }]
+            })
+            }}>
               <Text style={{color: Colors.white}}>Accounts</Text>
             </Pressable>
         </View>
@@ -60,7 +72,13 @@ const AddRecordsScreen = ({ navigation }) => {
             <Image source={require('../assets/Others/Pagibig.png')} style={{height:65,width: 65}} resizeMode='contain'/>
             <Image source={require('../assets/Others/PhilHealth.png')} style={{height:65,width: 65}} resizeMode='contain'/>
           </View>
-            <Pressable style={styles.btn}>
+            <Pressable style={styles.btn}onPress={()=>{
+              navigation.navigate('AccountRecordInput', {type: 'Gcash', data: 
+              [{ label: 'Gcash', value: 'Gcash' },
+              { label: 'Maya', value: 'Maya' },
+              { label: 'Pagibig', value: 'Pagibig' },
+              { label: 'PhilHealth', value: 'PhilHealth' }]})
+            }}>
               <Text style={{color: Colors.white}}>Others</Text>
             </Pressable>
         </View>

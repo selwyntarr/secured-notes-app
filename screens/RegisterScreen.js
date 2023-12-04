@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pressable, StyleSheet, TextInput, } from 'react-native';
+import { Pressable, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { View, SafeAreaView, Text, Image } from "react-native";
 import Colors from '../components/Colors.js';
 import { db } from "../firebaseConfig.js";
@@ -92,16 +92,7 @@ const RegisterScreen = ({navigation}) => {
 
           <View style={styles.input_box}>
             <TextInput 
-              placeholder="Username"
-              multiline={false} 
-              style={styles.input}
-              value={inputUsername}
-              onChangeText={(text) => handleChange({input: text, type: 'username'})}/>
-          </View>
-
-          <View style={styles.input_box}>
-            <TextInput 
-              placeholder="Email"
+              placeholder="Email" 
               multiline={false} 
               style={styles.input}
               value={inputEmail}
@@ -110,22 +101,41 @@ const RegisterScreen = ({navigation}) => {
 
           <View style={styles.input_box}>
             <TextInput 
-              placeholder="Password"
+              placeholder="Username" 
               multiline={false} 
               style={styles.input}
-              secureTextEntry
-              value={inputPassword}
-              onChangeText={(text) => handleChange({input: text, type: 'password'})}/>
+              value={inputUsername}
+              onChangeText={(text) => handleChange({input: text, type: 'username'})}/>
           </View>
 
-          <View style={styles.input_box}>
+          <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
             <TextInput 
-              placeholder="Confirm Password"
-              multiline={false} 
-              style={styles.input}
-              secureTextEntry
+              placeholder="Password" 
+              secureTextEntry={!isPasswordVisible} 
+              multiline={false} style={{...styles.input, flex: 1}}
+              value={inputPassword}
+              onChangeText={(text) => handleChange({input: text, type: 'password'})}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+            >
+              <Image source={isPasswordVisible ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
+            <TextInput placeholder="Confirm Password" secureTextEntry={!isPasswordVisible2} 
+              multiline={false} style={{...styles.input, flex: 1}}
               value={inputConfirmPassword}
               onChangeText={(text) => handleChange({input: text, type: 'confirm-password'})}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility2}
+            >
+              <Image source={isPasswordVisible2 ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
           </View>
 
           <View style={{alignItems: "center"}}>
@@ -199,7 +209,7 @@ const styles = StyleSheet.create({
   input_box: {
     backgroundColor: Colors.input_gray,
     borderRadius: 20,
-    padding: 15
+    padding: 10
   },
   input: {
     textAlign: "center",

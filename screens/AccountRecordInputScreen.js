@@ -1,65 +1,113 @@
-import React from 'react';
-import {FlatList, Image, View, Text, StyleSheet, TextInput, SafeAreaView, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { TouchableOpacity, View, Text, Image, TextInput, SafeAreaView, Pressable, StyleSheet } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 import Colors from '../components/Colors';
 
-const AccountRecordInputScreen = ({navigation}) => {
+const AccountRecordInputScreen = ({route, navigation }) => {
 
-    return (
-        <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.headerText}>Record</Text>
-              <Pressable style={styles.addBtn} onPress={()=>{
-                navigation.navigate('AddRecord')
-              }}>
-    
-                <Text style={{fontSize: 12}}>Cancel</Text>
-    
-                <Image source={require('../assets/AddIcon.png')} resizeMode='contain' 
-                style={{height:25, width: 25}}/>
-    
-              </Pressable>
-            </View>
-          </View>
-          <View style={styles.titleBar}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Account</Text>
+  const data = route.params.data
+
+  const [selectedBank, setSelectedBank] = useState(route.params.type);
+
+  const determineBankImage = (bankName) => {
+    switch (bankName) {
+      case 'Banco De Oro':
+        return require('../assets/banks/BDO.png');
+      case 'Union Bank':
+        return require('../assets/banks/UnionBank.png');
+      case 'Land Bank':
+        return require('../assets/banks/LandBank.png');
+      case 'Security Bank':
+        return require('../assets/banks/SecurityBank.png');
+      case 'Facebook':
+        return require('../assets/Socials/Facebook.png');
+      case 'Instagram':
+        return require('../assets/Socials/Insta.png');
+      case 'Gmail':
+        return require('../assets/Socials/Gmail.png');
+      case 'Twitter':
+        return require('../assets/Socials/Twitter.png');
+      case 'Gcash':
+        return require('../assets/Others/Gcash.png');
+      case 'Maya':
+        return require('../assets/Others/Maya.png');
+      case 'Pagibig':
+        return require('../assets/Others/Pagibig.png');
+      case 'PhilHealth':
+        return require('../assets/Others/PhilHealth.png');
+      default:
+        return require('../assets/banks/BDO.png');
+    }
+  };
+
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  }
+
+  const bankImage = determineBankImage(selectedBank);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.headerText}>Record</Text>
+          <Pressable style={styles.addBtn} onPress={() => { navigation.navigate('AddRecord') }}>
+            <Text style={{ fontSize: 12 }}>Cancel</Text>
+            <Image source={require('../assets/Cancel.png')} resizeMode='contain' style={{ height: 25, width: 25 }} />
+          </Pressable>
+        </View>
+      </View>
+      <View style={styles.titleBar}>
+        <Text style={{ fontSize: 15, fontWeight: 'bold', textAlign: 'center' }}>Account</Text>
+      </View>
+
+      <View style={{ alignItems: 'center' }}>
+        <Image source={bankImage} resizeMode='contain' style={{ height: 100, width: 100 }} />
+        <View style={{ marginBottom: 20, padding: 10, borderRadius: 15, backgroundColor: '#E9E9E9', width: '80%' }}>
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}
+            data={data}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Bank"
+            value={route.params.type}
+            onChange={(item) => {
+              setSelectedBank(item.value);
+            }}
+          />
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <View style={styles.input_box}>
+          <Text style={{ fontSize: 12 }}>Username/Email: </Text>
+          <TextInput placeholder="Username or email" multiline={false} style={styles.input} />
+        </View>
+
+        <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
+            <TextInput placeholder="Confirm Password" secureTextEntry={!isPasswordVisible} 
+              multiline={false} style={{...styles.input, flex: 1}}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+            >
+              <Image source={isPasswordVisible ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
           </View>
 
-          <View style={{alignItems: 'center' }}>
-            <Image source={require('../assets/BDO.png')} resizeMode='contain' style={{height: 100, width: 100}}/>
-            <View style={{marginBottom: 20, padding: 10, borderRadius: 15, 
-                backgroundColor:'#E9E9E9', width: '80%'}}>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center'}}>Banco De Oro</Text>
-                <Picker
-                    selectedValue={selectedValue}
-                    onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-                >
-                    <Picker.Item label="Option 1" value="option1" />
-                    <Picker.Item label="Option 2" value="option2" />
-                    <Picker.Item label="Option 3" value="option3" />
-                    <Picker.Item label="Option 4" value="option4" />
-                </Picker>
-            </View>
-          </View>
-          <View style={styles.card}>
-
-          <View style={styles.input_box}>
-            <Text style={{fontSize:12}}>Username/Email: </Text>
-            <TextInput placeholder="Username or email" multiline={false} style={styles.input}/>
-          </View>
-
-          <View style={styles.input_box}>
-            <Text style={{fontSize:12}}>Password: </Text>
-            <TextInput placeholder="Password" multiline={false} style={styles.input} />
-          </View>
-
-            <Pressable style={styles.btn}>
-              <Text style={{color: Colors.white}}>Add Record</Text>
-            </Pressable>
-          </View>
-        </SafeAreaView>
-      );
-    };
+        <Pressable style={styles.btn}>
+          <Text style={{ color: Colors.white }}>Add Record</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
+};
     
     const styles = StyleSheet.create({
       container: {
