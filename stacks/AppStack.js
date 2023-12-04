@@ -3,13 +3,15 @@ import Screens from "../screens/Screens";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Image, Text } from "react-native";
 import RecordStack from "./RecordStack";
+import SearchStack from "./SearchStack";
+import HomeStack from "./HomeStack";
 
 const Tab = createBottomTabNavigator()
 
 const AppStack = () => {
     return (
     <Tab.Navigator 
-        initialRouteName = 'Home' 
+        initialRouteName = 'HomeStack' 
         backBehavior ='history'
         screenOptions={{
             headerShown: false,
@@ -17,7 +19,7 @@ const AppStack = () => {
             tabBarStyle: { padding: 10, height: 80},
             tabBarHideOnKeyboard: true,
         }}>
-        <Tab.Screen name='Home' component={Screens.HomeScreen}
+        <Tab.Screen name='HomeStack' component={HomeStack}
             options={{
                 tabBarIcon: ({focused}) => (
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
@@ -55,7 +57,7 @@ const AppStack = () => {
                 )
             }}
          />
-        <Tab.Screen name= 'Search' component={Screens.SearchScreen} 
+        <Tab.Screen name= 'SearchStack' component={SearchStack} 
             options={{
                 tabBarIcon: ({focused}) => (
                     <View style={{alignItems: 'center', justifyContent: 'center'}}>
