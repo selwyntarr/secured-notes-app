@@ -1,13 +1,26 @@
 import React from "react";
-import { Pressable, StyleSheet, TextInput, } from 'react-native';
+import { Pressable, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { View, SafeAreaView, Text, Image } from "react-native";
+import { useState } from "react";
 import Colors from '../components/Colors.js'
 
 const RegisterScreen = ({navigation}) => {
 
-  const handleRegister = () => {
-    navigation.navigate('Login')
-  };    
+    const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+    const togglePasswordVisibility = () => {
+      setPasswordVisible(!isPasswordVisible);
+    }
+
+    const [isPasswordVisible2, setPasswordVisible2] = useState(false);
+
+    const togglePasswordVisibility2 = () => {
+      setPasswordVisible2(!isPasswordVisible2);
+    }
+
+    const handleRegister = () => {
+      navigation.navigate('Login')
+    };    
 
   return (
     <SafeAreaView style={styles.container}>
@@ -28,15 +41,35 @@ const RegisterScreen = ({navigation}) => {
           </View>
 
           <View style={styles.input_box}>
+            <TextInput placeholder="Email" multiline={false} style={styles.input}/>
+          </View>
+
+          <View style={styles.input_box}>
             <TextInput placeholder="Username" multiline={false} style={styles.input}/>
           </View>
 
-          <View style={styles.input_box}>
-            <TextInput placeholder="Password" multiline={false} style={styles.input}/>
+          <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
+            <TextInput placeholder="Password" secureTextEntry={!isPasswordVisible} 
+              multiline={false} style={{...styles.input, flex: 1}}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+            >
+              <Image source={isPasswordVisible ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.input_box}>
-            <TextInput placeholder="Email" multiline={false} style={styles.input}/>
+          <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
+            <TextInput placeholder="Confirm Password" secureTextEntry={!isPasswordVisible2} 
+              multiline={false} style={{...styles.input, flex: 1}}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility2}
+            >
+              <Image source={isPasswordVisible2 ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
           </View>
 
           <View style={{alignItems: "center"}}>
@@ -110,7 +143,7 @@ const styles = StyleSheet.create({
   input_box: {
     backgroundColor: Colors.input_gray,
     borderRadius: 20,
-    padding: 15
+    padding: 10
   },
   input: {
     textAlign: "center",
