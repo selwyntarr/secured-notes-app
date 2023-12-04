@@ -12,6 +12,8 @@ const RegisterScreen = ({navigation}) => {
   const [inputEmail, setInputEmail] = useState('');
   const [inputPassword, setInputPassword] = useState('')
   const [inputConfirmPassword, setInputConfirmPassword] = useState('')
+  const [isPasswordVisible, setPasswordVisible] = useState(false)
+  const [isPasswordVisible2, setPasswordVisible2] = useState(false)
 
   const handleChange = ({input, type}) => {
     if (type === 'name'){
@@ -25,6 +27,14 @@ const RegisterScreen = ({navigation}) => {
     } else if (type === 'confirm-password'){
       setInputConfirmPassword(input)
     }
+  }
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  }
+
+  const togglePasswordVisibility2 = () => {
+    setPasswordVisible(!isPasswordVisible2);
   }
 
   const handleRegister = () => {
