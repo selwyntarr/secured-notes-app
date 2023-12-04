@@ -1,65 +1,90 @@
-import React from 'react';
-import {FlatList, Image, View, Text, StyleSheet, TextInput, SafeAreaView, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TextInput, SafeAreaView, Pressable, StyleSheet } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 import Colors from '../components/Colors';
 
-const AccountRecordInputScreen = ({navigation}) => {
+const AccountRecordInputScreen = ({ navigation }) => {
+  const data = [
+    { label: 'Banco De Oro', value: 'Banco De Oro' },
+    { label: 'Union Bank', value: 'Union Bank' },
+    { label: 'Land Bank', value: 'Land Bank' },
+    { label: 'Security Bank', value: 'Security Bank' },
+  ];
 
-    return (
-        <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.headerText}>Record</Text>
-              <Pressable style={styles.addBtn} onPress={()=>{
-                navigation.navigate('AddRecord')
-              }}>
-    
-                <Text style={{fontSize: 12}}>Cancel</Text>
-    
-                <Image source={require('../assets/AddIcon.png')} resizeMode='contain' 
-                style={{height:25, width: 25}}/>
-    
-              </Pressable>
-            </View>
-          </View>
-          <View style={styles.titleBar}>
-            <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>Account</Text>
-          </View>
+  const [value, setValue] = useState(null);
+  const [selectedBank, setSelectedBank] = useState('Banco De Oro');
 
-          <View style={{alignItems: 'center' }}>
-            <Image source={require('../assets/BDO.png')} resizeMode='contain' style={{height: 100, width: 100}}/>
-            <View style={{marginBottom: 20, padding: 10, borderRadius: 15, 
-                backgroundColor:'#E9E9E9', width: '80%'}}>
-                <Text style={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center'}}>Banco De Oro</Text>
-                <Picker
-                    selectedValue={selectedValue}
-                    onValueChange={(itemValue, itemIndex) => setSelectedValue(itemValue)}
-                >
-                    <Picker.Item label="Option 1" value="option1" />
-                    <Picker.Item label="Option 2" value="option2" />
-                    <Picker.Item label="Option 3" value="option3" />
-                    <Picker.Item label="Option 4" value="option4" />
-                </Picker>
-            </View>
-          </View>
-          <View style={styles.card}>
+  const determineBankImage = (bankName) => {
+    switch (bankName) {
+      case 'Banco De Oro':
+        return require('../assets/banks/BDO.png');
+      case 'Union Bank':
+        return require('../assets/banks/UnionBank.png');
+      case 'Land Bank':
+        return require('../assets/banks/LandBank.png');
+      case 'Security Bank':
+        return require('../assets/banks/SecurityBank.png');
+      default:
+        return require('../assets/banks/BDO.png');
+    }
+  };
 
-          <View style={styles.input_box}>
-            <Text style={{fontSize:12}}>Username/Email: </Text>
-            <TextInput placeholder="Username or email" multiline={false} style={styles.input}/>
-          </View>
+  const bankImage = determineBankImage(selectedBank);
 
-          <View style={styles.input_box}>
-            <Text style={{fontSize:12}}>Password: </Text>
-            <TextInput placeholder="Password" multiline={false} style={styles.input} />
-          </View>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.headerText}>Record</Text>
+          <Pressable style={styles.addBtn} onPress={() => { navigation.navigate('AddRecord') }}>
+            <Text style={{ fontSize: 12 }}>Cancel</Text>
+            <Image source={require('../assets/Cancel.png')} resizeMode='contain' style={{ height: 25, width: 25 }} />
+          </Pressable>
+        </View>
+      </View>
+      <View style={styles.titleBar}>
+        <Text style={{ fontSize: 15, fontWeight: 'bold', textAlign: 'center' }}>Account</Text>
+      </View>
 
-            <Pressable style={styles.btn}>
-              <Text style={{color: Colors.white}}>Add Record</Text>
-            </Pressable>
-          </View>
-        </SafeAreaView>
-      );
-    };
+      <View style={{ alignItems: 'center' }}>
+        <Image source={bankImage} resizeMode='contain' style={{ height: 100, width: 100 }} />
+        <View style={{ marginBottom: 20, padding: 10, borderRadius: 15, backgroundColor: '#E9E9E9', width: '80%' }}>
+          <Dropdown
+            style={styles.dropdown}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center' }}
+            data={data}
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Bank"
+            value={value}
+            onChange={(item) => {
+              setValue(item.value);
+              setSelectedBank(item.value);
+            }}
+          />
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <View style={styles.input_box}>
+          <Text style={{ fontSize: 12 }}>Username/Email: </Text>
+          <TextInput placeholder="Username or email" multiline={false} style={styles.input} />
+        </View>
+
+        <View style={styles.input_box}>
+          <Text style={{ fontSize: 12 }}>Password: </Text>
+          <TextInput placeholder="Password" multiline={false} style={styles.input} />
+        </View>
+
+        <Pressable style={styles.btn}>
+          <Text style={{ color: Colors.white }}>Add Record</Text>
+        </Pressable>
+      </View>
+    </SafeAreaView>
+  );
+};
     
     const styles = StyleSheet.create({
       container: {
