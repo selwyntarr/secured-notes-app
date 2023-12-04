@@ -2,9 +2,37 @@ import React from "react";
 import { Pressable, StyleSheet, TextInput, } from 'react-native';
 import { View, SafeAreaView, Text, Image } from "react-native";
 import Colors from '../components/Colors.js'
+import * as LocalAuthentication from 'expo-local-authentication';
+
 
 const LoginScreen = ({navigation}) => {
 
+  const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
+
+  const checkSupportedAuthentication = async () => {
+    const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    if (types && types.length) {
+      setFingerprintAvailable(types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT));
+    }
+  };
+
+
+  const handleBiometric = async () => {
+    checkSupportedAuthentication()
+    if (fingerprintAvailable === true){
+      try { 
+        const results = await LocalAuthentication.authenticateAsync();
+
+        if (results.success){
+          console.log('Success: Login via fingerprint!')
+        } else {
+          console.log('Error: ', results.success)
+        }
+      } catch (error) {
+        console.log(error.message)
+      }
+    } 
+  }
 
   const handleLogin = () => {
     navigation.replace('App');
@@ -41,8 +69,10 @@ const LoginScreen = ({navigation}) => {
           </View>
 
           <View style={{height: '28%', alignSelf: "center"}}>
-            <Image source={require('../assets/Fingerprint.png')} resizeMode="contain"
-            style={{height: '100%'}}/>
+            <Pressable onPress={handleBiometric}>
+              <Image source={require('../assets/Fingerprint.png')} resizeMode="contain"
+              style={{height: '100%'}}/>
+            </Pressable>
           </View>
 
           <View style={{alignItems: "center"}}>
