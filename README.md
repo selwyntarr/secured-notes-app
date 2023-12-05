@@ -11,7 +11,7 @@ Getting Started
 ## Follow the steps below to run the Safe Memo app on your local machine:
 Clone the Repository:
 ```
-git clone https://github.com/your-username/safe-memo.git
+git clone https://github.com/selwyntarr/secured-notes-app.git
 ```
 Navigate to the Project Directory:
 ```
