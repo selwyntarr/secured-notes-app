@@ -15,7 +15,7 @@ git clone https://github.com/selwyntarr/secured-notes-app.git
 ```
 Navigate to the Project Directory:
 ```
-cd safe-memo
+cd secured-notes-app
 ```
 Install Dependencies:
 ```
