@@ -10,8 +10,9 @@ const AccountRecordScreen = ({ route, navigation }) => {
     
   const recordId = route.params.id;
 
-  const [account, setAccount] = useState({})
+  const [account, setAccount] = useState(null)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [isLoading, setIsLoading] = useState(true);
 
   const toggleIsFavorite = () => {
     setIsFavorite(!isFavorite);
@@ -29,53 +30,56 @@ const AccountRecordScreen = ({ route, navigation }) => {
     });
   }
 
+  const fetchData = async () => {
+    try {
+
+      const q = query(collection(db, 'accounts'), recordId);
+      const querysnapshot = await getDocs(q)
+      
+      const imageUrls = await Promise.all(
+        querysnapshot.docs.map(async (doc) => {
+          const path = doc.data().icon;
+          try {
+            return await loadIcons(path);
+          } catch (error) {
+            console.error(`Error loading image for ${path}:`, error);
+            return null; // or handle the error in a different way
+          }
+        })
+      );
+
+      const q1 = query(collection(db, 'accounts'), recordId);
+      const querysnapshot1 = await getDocs(q1);
+
+      const accs = querysnapshot1.docs.map((doc, index) => ({
+        id: doc.id,
+        creds: doc.data().credentials,
+        title: doc.data().name,
+        type: doc.data().type,
+        isFavorite: doc.data()['is-favorite'],
+        image: imageUrls[index]
+      }));
+
+      setAccount(accs[0]);   
+
+      if (isFavorite !== accs[0].isFavorite) {
+        toggleIsFavorite();
+      }
+
+    } catch (error) {
+
+      console.error('Error fetching data:', error);
+      
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
-      const fetchData = async () => {
-        try {
-
-          const q = query(collection(db, 'accounts'), recordId);
-          const querysnapshot = await getDocs(q)
-          
-          const imageUrls = await Promise.all(
-            querysnapshot.docs.map(async (doc) => {
-              const path = doc.data().icon;
-              try {
-                return await loadIcons(path);
-              } catch (error) {
-                console.error(`Error loading image for ${path}:`, error);
-                return null; // or handle the error in a different way
-              }
-            })
-          );
-
-          const q1 = query(collection(db, 'accounts'), recordId);
-          const querysnapshot1 = await getDocs(q1);
-
-          const accs = querysnapshot1.docs.map((doc, index) => ({
-            id: doc.id,
-            creds: doc.data().credentials,
-            title: doc.data().name,
-            type: doc.data().type,
-            isFavorite: doc.data()['is-favorite'],
-            image: imageUrls[index]
-          }));
-
-          setAccount(accs[0]);   
-
-          if (isFavorite !== accs[0].isFavorite) {
-            toggleIsFavorite();
-          }
-
-        } catch (error) {
-
-          console.error('Error fetching data:', error);
-          
-        }
-      };
-
       fetchData();
-
+      console.log(account)
+      if ( !Object.is(account, null) ) {
+        setIsLoading(false);
+      }
     }, [])
   );
   
@@ -114,23 +118,46 @@ const AccountRecordScreen = ({ route, navigation }) => {
         </View>
       
         <View style={styles.card}>
-        <ScrollView>
-          {account.creds.map((item) => (
-            <View key={account.id}>
-              <Text style={{fontSize:12, paddingLeft: 12}}>{item.label}</Text>
-              <View style={styles.input_box}>
-                <TextInput value = {item.value}  multiline={false} style={styles.input} editable={false}/>
-              </View>
+          <ScrollView>
+            <View>
+              {isLoading ? (
+                <Text style={{ textAlign: 'center' }}>Loading</Text>
+              ) : (
+                <View>
+                  {account.creds.map((item) => (
+                    <View key={account.id}>
+                      <Text style={{ fontSize: 12, paddingLeft: 12 }}>{item.label}</Text>
+                      <View style={styles.input_box}>
+                        <TextInput
+                          value={item.value}
+                          multiline={false}
+                          style={styles.input}
+                          editable={false}
+                        />
+                      </View>
+
+                      <Pressable
+                        style={isFavorite === false ? styles.btnLight : styles.btn}
+                        onPress={toggleIsFavorite}
+                      >
+                        <Text
+                          style={
+                            isFavorite === false
+                              ? { color: Colors.dark_brown }
+                              : { color: Colors.white }
+                          }
+                        >
+                          {isFavorite === false
+                            ? 'Remove to favorite'
+                            : 'Add to favorite'}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
-          ))}
-          <Pressable style={ isFavorite === false ? styles.btnLight : styles.btn } onPress={toggleIsFavorite}>
-            <Text style={ isFavorite === false ? {color: Colors.dark_brown} : {color: Colors.white} }>{ isFavorite === false ? 'Remove to favorite' : 'Add to favorite'}</Text>
-          </Pressable>
-        </ScrollView>
-          
-              
-          
-          
+          </ScrollView>
         </View>
       </SafeAreaView>
     );
