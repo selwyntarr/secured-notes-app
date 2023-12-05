@@ -9,21 +9,21 @@ Node.js (npm comes with Node.js)
 Expo CLI (npm install -g expo-cli)
 Getting Started
 ## Follow the steps below to run the Safe Memo app on your local machine:
-Clone the Repository:
+**Clone the Repository:**
 ```
 git clone https://github.com/selwyntarr/secured-notes-app.git
 ```
-Navigate to the Project Directory:
+**Navigate to the Project Directory:**
 ```
 cd secured-notes-app
 ```
-Install Dependencies:
+**Install Dependencies:**
 ```
 npm ci
 ```
 This command will install the necessary dependencies for the project.
 
-Start the Expo Development Server:
+**Start the Expo Development Server:**
 ```
 npx expo start
 ```
