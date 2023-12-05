@@ -55,7 +55,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
 
             const accs = querysnapshot1.docs.map((doc, index) => ({
               id: doc.id,
-              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials['account-number'],
+              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0]['account-number'],
               title: doc.data().name,
               image: imageUrls[index]
               }));
@@ -84,7 +84,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
             
             const accs = querysnapshot1.docs.map((doc, index) => ({
               id: doc.id,
-              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials['account-number'],
+              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0]['account-number'],
               title: doc.data().name,
               image: imageUrls[index]
               }));
@@ -113,7 +113,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
 
             const accs = querysnapshot1.docs.map((doc, index) => ({
               id: doc.id,
-              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials['account-number'],
+              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0]['account-number'],
               title: doc.data().name,
               image: imageUrls[index]
               }));
@@ -138,7 +138,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
 
   const renderItem = ({ item }) => (
     <Pressable style={styles.rowItems} onPress={()=>{
-        navigation.navigate('AccountRecord', item)
+        navigation.navigate('AccountRecord', {id:item.id})
       }}>
       <Image source={{ uri: item.image }} style={{height: 40, width: 40}} resizeMode='contain'/>
       <View>
