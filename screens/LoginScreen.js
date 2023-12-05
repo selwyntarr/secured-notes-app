@@ -1,5 +1,5 @@
-import React from "react";
-import { Pressable, StyleSheet, TextInput, } from 'react-native';
+import React, {useState,useEffect}from "react";
+import { TouchableOpacity, Pressable, Keyboard, StyleSheet, TextInput, } from 'react-native';
 import { View, SafeAreaView, Text, Image } from "react-native";
 import Colors from '../components/Colors.js'
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -43,8 +43,8 @@ const LoginScreen = ({navigation}) => {
   };    
 
   return (
-    <SafeAreaView style={styles.container}>
-
+    <KeyboardAwareScrollView style={styles.container} scrollEnabled={true}
+      contentContainerStyle={{flexGrow: 1}} extraHeight={150} enableOnAndroid={true}>
         <View style={styles.header}>
             <Text style={styles.headerText}>Login</Text>
         </View>
@@ -59,11 +59,19 @@ const LoginScreen = ({navigation}) => {
             <TextInput placeholder="Username" multiline={false} style={styles.input}/>
           </View>
 
-          <View style={styles.input_box}>
-            <TextInput placeholder="Password" multiline={false} style={styles.input}/>
+          <View style={{... styles.input_box, flexDirection: 'row', 
+                            justifyContent: 'space-between', gap: 10}}>
+            <TextInput placeholder="Password" secureTextEntry={!isPasswordVisible} 
+              multiline={false} style={{...styles.input, flex: 1}}/>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+            >
+              <Image source={isPasswordVisible ? require('../assets/not_visible.png') : require('../assets/visible.png')}
+              style={{height: 25, width: 25}} resizeMode="contain"/>
+            </TouchableOpacity>
           </View>
 
-          <View>
+          <View style={{display: isKeyboardOpen?'none' : null }}>
             <Text style={{fontWeight: 'bold', fontSize: 15, alignSelf: "center"}}>Or</Text>
           </View>
 
@@ -86,11 +94,10 @@ const LoginScreen = ({navigation}) => {
               </Pressable>
             </View>
           </View>
-          
         
         </View>
 
-    </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
 }
 
@@ -98,7 +105,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
-    justifyContent: 'space-between',
     gap: 10
   },
   btn:{
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: Colors.khaki_30,
-    height: '15%',
+    height: 100,
     width: '90%',
     alignSelf: "center",
     borderBottomLeftRadius: 20,
@@ -128,7 +134,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.card_container,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    height: '65%',
     width: '90%',
     alignSelf: 'center',
     shadowOffset: { width: -2, height: 1 },
@@ -136,11 +141,11 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     padding: 20,
-    flex: 1,
+    height: '200%',
     gap: 20
   },
   user_icon: {
-    height: '20%',
+    height: 150,
     alignSelf: "center"
   },
   input_box: {

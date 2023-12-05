@@ -1,61 +1,95 @@
 import React from 'react';
-import {ScrollView, Image, View, Text, StyleSheet, FlatList, SafeAreaView, Pressable } from 'react-native';
+import {SectionList, Image, View, Text, StyleSheet, FlatList, SafeAreaView, Pressable } from 'react-native';
 import Colors from '../components/Colors';
 
 const HomeScreen = ({ navigation }) => {
 
-  const data = [
-    { id: '1', cred: "5434 5345 2312 4124" , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
-    { id: '2', cred: "John.Doe@gmail.com" , title: 'Gmail', asset: require('../assets/gmail.png') },
-    { id: '3', cred: "John.Doe@facebook.com" , title: 'Facebook', asset: require('../assets/Facebook.png') },
+  const favoritData = [
+    { cred: "5434 5345 2312 4124" , pass:'123123' , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
+    { cred: "John.Doe@gmail.com" , pass:'123123' , title: 'Gmail', asset: require('../assets/gmail.png') },
+    { cred: "John.Doe@facebook.com" , pass:'123123' , title: 'Facebook', asset: require('../assets/Facebook.png') },
+  ];
+
+  const recentData = [
+    { cred: "1234 1244 4567 0000" , pass:'123123' , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
+    { cred: "Johns.Does@gmail.com" , pass:'123123' , title: 'Gmail', asset: require('../assets/gmail.png') },
+    { cred: "Johns.Does@facebook.com" , pass:'123123' , title: 'Facebook', asset: require('../assets/Facebook.png') },
+  ];
+
+  const nestedData = [
+    {
+      title: 'Favorites',
+      data: favoritData
+    },
+    {
+      title: 'Recently Added',
+      data: recentData
+    },
   ];
 
   const renderItem = ({ item }) => (
     <View style={styles.rowItems}>
-      <Image source={item.asset} style={{height: 40, width: 40}} resizeMode='contain'/>
+      <Image source={item.asset} style={{ height: 40, width: 40 }} resizeMode='contain' />
       <View>
-        <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
-        <Text style = {{fontSize: 10}}>{item.cred}</Text>
+        <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+        <Text style={{ fontSize: 10 }}>{item.cred}</Text>
+      </View>
+    </View>
+  );
+
+  const renderSectionHeader = ({ section: { title } }) => (
+    <Text style={styles.textDivider}>{title}</Text>
+  );
+
+  const renderNestedItem = (item,index,section) => (
+    <View style={styles.rowItems}>
+      <Image source={item.asset} style={{ height: 40, width: 40 }} resizeMode='contain' />
+      <View>
+        <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+        <Text style={{ fontSize: 10 }}>{item.cred}</Text>
       </View>
     </View>
   );
 
   const handleRefresh = () => {
-    console.log('Refresh')
-    //Refresh logic
-  }
+    console.log('Refresh');
+    // Refresh logic
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={styles.headerText}>Home</Text>
           <Pressable style={styles.addBtn} onPress={handleRefresh}>
-            <Text style={{fontSize: 12}}>Refresh</Text>
-            <Image source={require('../assets/refresh.png')} resizeMode='contain' 
-            style={{height:25, width: 25}}/>
+            <Text style={{ fontSize: 12 }}>Refresh</Text>
+            <Image
+              source={require('../assets/refresh.png')}
+              resizeMode='contain'
+              style={{ height: 25, width: 25 }}
+            />
           </Pressable>
         </View>
       </View>
-      <Text style={styles.textDivider}>Favorites</Text>
       <View style={styles.card}>
-        <View style={styles.flatListFrame}>
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-          />
-        </View>
-      </View>
-      <Text style={styles.textDivider}>Recently Added</Text>
-      <View style={styles.card}>
-          <View style={styles.flatListFrame}>
-            <FlatList style={{borderRadius: 15}}
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id}
-            />
-          </View>
+        <SectionList
+          sections={nestedData}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item, index, section}) => {
+            return (
+              <Pressable style={styles.rowItems} onPress={()=>{
+                navigation.navigate('AccountsRecord', item)
+              }}>
+                <Image source={item.asset} style={{ height: 40, width: 40 }} resizeMode='contain' />
+                <View>
+                  <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+                  <Text style={{ fontSize: 10 }}>{item.cred}</Text>
+                </View>
+              </Pressable>
+            );
+          }}
+          renderSectionHeader={renderSectionHeader}
+        />
       </View>
     </SafeAreaView>
   );
@@ -78,6 +112,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 20,
+    marginTop: 10
   },
   row:{
     backgroundColor: '#E9E9E9',
@@ -98,7 +134,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: Colors.card_container,
-    borderRadius: 20,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     height: '65%',
     width: '90%',
     alignSelf: 'center',
@@ -108,7 +145,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 20,
     flex: 1,
-    gap: 15
+    gap: 20
   },
   user_icon: {
     height: '20%',
