@@ -55,7 +55,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
 
             const accs = querysnapshot1.docs.map((doc, index) => ({
               id: doc.id,
-              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0]['account-number'],
+              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0].value,
               title: doc.data().name,
               image: imageUrls[index]
               }));
@@ -84,7 +84,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
             
             const accs = querysnapshot1.docs.map((doc, index) => ({
               id: doc.id,
-              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0]['account-number'],
+              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0].value,
               title: doc.data().name,
               image: imageUrls[index]
               }));
@@ -113,7 +113,7 @@ const AllRecordsScreen = ({ route, navigation }) => {
 
             const accs = querysnapshot1.docs.map((doc, index) => ({
               id: doc.id,
-              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0]['account-number'],
+              cred:  doc.data().type === 'account' ? doc.data().credentials['user-name'] : doc.data().credentials[0].value,
               title: doc.data().name,
               image: imageUrls[index]
               }));
