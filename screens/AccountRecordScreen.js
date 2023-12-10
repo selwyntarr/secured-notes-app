@@ -4,13 +4,21 @@ import Colors from '../components/Colors';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { db, iconFiles } from '../firebaseConfig';
 import { ref, getDownloadURL } from "firebase/storage";
-import { getDocs, query, collection, where } from 'firebase/firestore';
+import { getDocs, query, collection, where, getDoc, doc, updateDoc} from 'firebase/firestore';
+
+kebabToCapital = (kebabString) => {
+  return kebabString
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 
 const AccountRecordScreen = ({ route, navigation }) => {
     
   const recordId = route.params.id;
 
-  const [account, setAccount] = useState(null)
+  const [account, setAccount] = useState({})
   const [isFavorite, setIsFavorite] = useState(false)
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,38 +41,23 @@ const AccountRecordScreen = ({ route, navigation }) => {
   const fetchData = async () => {
     try {
 
-      const q = query(collection(db, 'accounts'), recordId);
-      const querysnapshot = await getDocs(q)
-      
-      const imageUrls = await Promise.all(
-        querysnapshot.docs.map(async (doc) => {
-          const path = doc.data().icon;
-          try {
-            return await loadIcons(path);
-          } catch (error) {
-            console.error(`Error loading image for ${path}:`, error);
-            return null; // or handle the error in a different way
-          }
-        })
-      );
+      const q = doc(db, 'accounts', recordId);
+      const querysnapshot = await getDoc(q)
 
-      const q1 = query(collection(db, 'accounts'), recordId);
-      const querysnapshot1 = await getDocs(q1);
+      const imageUrl = await loadIcons(querysnapshot.data().icon);
 
-      const accs = querysnapshot1.docs.map((doc, index) => ({
-        id: doc.id,
-        creds: doc.data().credentials,
-        title: doc.data().name,
-        type: doc.data().type,
-        isFavorite: doc.data()['is-favorite'],
-        image: imageUrls[index]
-      }));
-
-      setAccount(accs[0]);   
-
-      if (isFavorite !== accs[0].isFavorite) {
-        toggleIsFavorite();
+      const acc = {
+        id: querysnapshot.id,
+        creds: querysnapshot.data().credentials,
+        title: querysnapshot.data().name,
+        type: querysnapshot.data().type,
+        isFavorite: Boolean(querysnapshot.data()['is-favorite']),
+        image: imageUrl
       }
+
+      setIsFavorite(acc.isFavorite)
+
+      setAccount(acc);   
 
     } catch (error) {
 
@@ -76,15 +69,28 @@ const AccountRecordScreen = ({ route, navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
-      console.log(account)
-      if ( !Object.is(account, null) ) {
-        setIsLoading(false);
-      }
+
+      console.log(account);
+
+      setTimeout(() => {
+        if ( !Object.is(account, null) ) {
+          setIsLoading(false);
+        }
+      }, 1000);
+
     }, [])
   );
   
-  const handleFavorite = () => {
-      console.log('add to fave')
+  const handleFavorite = async (favorite) => {
+    const docRef = doc(db, 'accounts', recordId); // Replace 'yourCollection' with the actual collection name
+    try {
+      await updateDoc(docRef, {
+        ['is-favorite']: !favorite,
+      });
+      toggleIsFavorite();
+    } catch (error) {
+      console.error('Error updating field:', error);
+    }
   }
 
   return (
@@ -106,11 +112,11 @@ const AccountRecordScreen = ({ route, navigation }) => {
         </View>
 
         <View style={styles.titleBar}>
-          <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>{account.type}</Text>
+          <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>{kebabToCapital(account.type)}</Text>
         </View>
         
         <View style={{alignItems: 'center' }}>
-          <Image source={{uri:account.image}} resizeMode='contain' style={{height: 100, width: 100}}/>
+          <Image source={{ uri: account.image }} resizeMode='contain' style={{height: 100, width: 100}}/>
           <View style={{marginBottom: 20, padding: 10, borderRadius: 15, 
               backgroundColor:'#E9E9E9', width: '80%'}}>
               <Text style={{ fontSize: 14, fontWeight: 'bold', textAlign: 'center'}}>{account.title}</Text>
@@ -124,38 +130,41 @@ const AccountRecordScreen = ({ route, navigation }) => {
                 <Text style={{ textAlign: 'center' }}>Loading</Text>
               ) : (
                 <View>
-                  {account.creds.map((item) => (
-                    <View key={account.id}>
-                      <Text style={{ fontSize: 12, paddingLeft: 12 }}>{item.label}</Text>
+                  {account.creds.map((item, index) => (
+                    <View key={index} style={{ paddingTop: 20 }}>
+                      <Text style={{ fontSize: 12, paddingLeft: 12 }}>
+                        {kebabToCapital(item.id)}
+                      </Text>
                       <View style={styles.input_box}>
                         <TextInput
                           value={item.value}
                           multiline={false}
-                          style={styles.input}
-                          editable={false}
+                          style={styles.input} 
+                          editable={false}      
                         />
                       </View>
-
-                      <Pressable
-                        style={isFavorite === false ? styles.btnLight : styles.btn}
-                        onPress={toggleIsFavorite}
-                      >
-                        <Text
-                          style={
-                            isFavorite === false
-                              ? { color: Colors.dark_brown }
-                              : { color: Colors.white }
-                          }
-                        >
-                          {isFavorite === false
-                            ? 'Remove to favorite'
-                            : 'Add to favorite'}
-                        </Text>
-                      </Pressable>
                     </View>
                   ))}
                 </View>
               )}
+            </View>
+            <View style={{paddingTop: 20}}>
+              <Pressable
+                style={isFavorite === true ? styles.btnLight : styles.btn}
+                onPress={() => {handleFavorite(isFavorite)}}
+              >
+                <Text
+                  style={
+                    isFavorite === true
+                      ? { color: Colors.dark_brown }
+                      : { color: Colors.white }
+                  }
+                >
+                  {isFavorite === true
+                    ? 'Remove to favorite'
+                    : 'Add to favorite'}
+                </Text>
+              </Pressable>
             </View>
           </ScrollView>
         </View>

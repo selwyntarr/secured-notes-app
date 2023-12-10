@@ -2,14 +2,58 @@ import React from 'react';
 import {TextInput, Image, View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Pressable } from 'react-native';
 import Colors from '../components/Colors';
 import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { db } from '../firebaseConfig'; 
+import { setDoc, doc } from 'firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 const SettingsScreen = ({ navigation }) => {
 
-  const [fullname, setFullname] = useState('John Doe');
+  const [name, setName] = useState('John Doe');
   const [email, setEmail] = useState('john.doe@example.com');
   const [username, setUsername] = useState('johndoe');
   const [password, setPassword] = useState('securepassword');
   const [confirmpassword, setConfirmPassword] = useState('securepassword');
+
+  const handleChange = ({input,type}) => {
+    if (type === 'name'){
+      setName(input)
+    } else if (type === 'email'){
+      setEmail(input)
+    } else if (type === 'username'){
+      setUsername(input)
+    } else if (type === 'password'){
+      setPassword(input)
+    } else if (type === 'confirm-password'){
+      setConfirmPassword(input)
+    }
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          // Your asynchronous code goes here
+          const user = await AsyncStorage.getItem('user-session');
+          const userData = JSON.parse(user);
+          if (userData !== null){
+            if ( inputName === '' || inputAge === '' || inputContact === '' || inputEmail === '' || inputAddress === '') {
+              // setInputName(userData.name)
+              // setInputAge(String(userData.age))
+              // setInputContact(userData.contact)
+              // setInputEmail(userData.email)
+              // setInputAddress(userData.address)
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+
+      fetchData();
+
+    }, [])
+  );
 
   const handleLogout = () => {
     navigation.replace('Auth')
@@ -56,21 +100,21 @@ const SettingsScreen = ({ navigation }) => {
         <View style={styles.card}>
 
           <View style={styles.input_box}>
-            <TextInput value = {fullname} placeholder="Full Name" multiline={false} style={styles.input}/>
+            <TextInput value = {name} placeholder="Full Name" multiline={false} style={styles.input} onChangeText={(text) => handleChange({input: text, type: 'name'})}/>
           </View>
 
           <View style={styles.input_box}>
-            <TextInput value = {email} placeholder="Email" multiline={false} style={styles.input}/>
+            <TextInput value = {email} placeholder="Email" multiline={false} style={styles.input} onChangeText={(text) => handleChange({input: text, type: 'email'})}/>
           </View>
 
           <View style={styles.input_box}>
-            <TextInput value = {username} placeholder="Username" multiline={false} style={styles.input}/>
+            <TextInput value = {username} placeholder="Username" multiline={false} style={styles.input} onChangeText={(text) => handleChange({input: text, type: 'username'})}/>
           </View>
 
           <View style={{... styles.input_box, flexDirection: 'row', 
                             justifyContent: 'space-between', gap: 10}}>
             <TextInput value = {password} placeholder="Password" secureTextEntry={!isPasswordVisible} 
-              multiline={false} style={{...styles.input, flex: 1}}/>
+              multiline={false} style={{...styles.input, flex: 1}} onChangeText={(text) => handleChange({input: text, type: 'password'})}/>
             <TouchableOpacity
               onPress={togglePasswordVisibility}
             >
@@ -83,7 +127,7 @@ const SettingsScreen = ({ navigation }) => {
                             justifyContent: 'space-between', gap: 10, 
                             display: confirmVisible? null : 'none'}}>
             <TextInput value = {confirmpassword} placeholder="Confirm Password" secureTextEntry={!isPasswordVisible2} 
-              multiline={false} style={{...styles.input, flex: 1}}/>
+              multiline={false} style={{...styles.input, flex: 1}} onChangeText={(text) => handleChange({input: text, type: 'confirm-password'})}/>
             <TouchableOpacity
               onPress={togglePasswordVisibility2}
             >

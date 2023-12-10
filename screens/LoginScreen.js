@@ -3,11 +3,15 @@ import { TouchableOpacity, Pressable, Keyboard, StyleSheet, TextInput, } from 'r
 import { View, SafeAreaView, Text, Image } from "react-native";
 import Colors from '../components/Colors.js'
 import * as LocalAuthentication from 'expo-local-authentication';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 
 const LoginScreen = ({navigation}) => {
 
   const [fingerprintAvailable, setFingerprintAvailable] = React.useState(false);
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [isKeyboardOpen, setKeyboardOpen] = useState(false);
 
   const checkSupportedAuthentication = async () => {
     const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
@@ -15,6 +19,10 @@ const LoginScreen = ({navigation}) => {
       setFingerprintAvailable(types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT));
     }
   };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  }
 
   const handleBiometric = async () => {
     checkSupportedAuthentication()
@@ -33,6 +41,21 @@ const LoginScreen = ({navigation}) => {
       }
     } 
   }
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardOpen(true);
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardOpen(false);
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleLogin = () => {
     navigation.replace('App');
@@ -75,7 +98,7 @@ const LoginScreen = ({navigation}) => {
             <Text style={{fontWeight: 'bold', fontSize: 15, alignSelf: "center"}}>Or</Text>
           </View>
 
-          <View style={{height: '28%', alignSelf: "center"}}>
+          <View style={{height: 135, alignSelf: "center", display: isKeyboardOpen?'none' : null}}>
             <Pressable onPress={handleBiometric}>
               <Image source={require('../assets/Fingerprint.png')} resizeMode="contain"
               style={{height: '100%'}}/>

@@ -1,54 +1,158 @@
-import React from 'react';
+import React, { useState} from 'react';
 import {SectionList, Image, View, Text, StyleSheet, FlatList, SafeAreaView, Pressable } from 'react-native';
 import Colors from '../components/Colors';
-
+import { useFocusEffect } from '@react-navigation/native'; 
+import { db, iconFiles } from '../firebaseConfig';
+import { ref, getDownloadURL } from "firebase/storage";
+import { getDocs, query, collection, where, limit, orderBy } from 'firebase/firestore';
 const HomeScreen = ({ navigation }) => {
 
-  const favoritData = [
-    { cred: "5434 5345 2312 4124" , pass:'123123' , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
-    { cred: "John.Doe@gmail.com" , pass:'123123' , title: 'Gmail', asset: require('../assets/gmail.png') },
-    { cred: "John.Doe@facebook.com" , pass:'123123' , title: 'Facebook', asset: require('../assets/Facebook.png') },
-  ];
+  const userId = '5nbfM3FhXABp5jJgo5oo';
 
-  const recentData = [
-    { cred: "1234 1244 4567 0000" , pass:'123123' , title: 'Banco De Oro', asset: require('../assets/BDO.png') },
-    { cred: "Johns.Does@gmail.com" , pass:'123123' , title: 'Gmail', asset: require('../assets/gmail.png') },
-    { cred: "Johns.Does@facebook.com" , pass:'123123' , title: 'Facebook', asset: require('../assets/Facebook.png') },
-  ];
+  const [accountListRecent, setAccountListRecent] = useState([]);
+  const [accountListFav, setAccountListFav] = useState([]);
+  const [sectionItem, setSectionItem] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const nestedData = [
-    {
-      title: 'Favorites',
-      data: favoritData
-    },
-    {
-      title: 'Recently Added',
-      data: recentData
-    },
-  ];
 
-  const renderItem = ({ item }) => (
-    <View style={styles.rowItems}>
-      <Image source={item.asset} style={{ height: 40, width: 40 }} resizeMode='contain' />
-      <View>
-        <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
-        <Text style={{ fontSize: 10 }}>{item.cred}</Text>
-      </View>
-    </View>
+  const loadIcons = (path) => {
+    return new Promise((resolve, reject) => {
+      getDownloadURL(ref(iconFiles, path))
+        .then((url) => {
+          resolve(url);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      const fetchData = async () => {
+      try {
+
+        // Generate Recent List
+
+        const q_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(5));
+        const querysnapshot_recent = await getDocs(q_recent)
+        
+        const imageUrls_recent = await Promise.all(
+          querysnapshot_recent.docs.map(async (doc) => {
+            const path = doc.data().icon;
+            try {
+              return await loadIcons(path);
+            } catch (error) {
+              console.error(`Error loading image for ${path}:`, error);
+              return null; // or handle the error in a different way
+            }
+          })
+        );
+        
+        const q1_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(5));
+        const querysnapshot1_recent = await getDocs(q1_recent);
+        
+        const accs_recent = querysnapshot1_recent.docs.map((doc, index) => ({
+          id: doc.id,
+          cred:  doc.data().credentials[0].value,
+          title: doc.data().name,
+          image: imageUrls_recent[index]
+          }));
+        
+        setAccountListRecent(accs_recent);
+
+        // Generate Favorite List
+
+        const q = query(collection(db, 'accounts'), where('user-id', '==', userId), where('is-favorite', '==', true));
+        const querysnapshot = await getDocs(q)
+        
+        const imageUrls = await Promise.all(
+          querysnapshot.docs.map(async (doc) => {
+            const path = doc.data().icon;
+            try {
+              return await loadIcons(path);
+            } catch (error) {
+              console.error(`Error loading image for ${path}:`, error);
+              return null; // or handle the error in a different way
+            }
+          })
+        );
+        
+        const q1 = query(collection(db, 'accounts'), where('user-id', '==', userId), where('is-favorite', '==', true));
+        const querysnapshot1 = await getDocs(q);
+
+        const accs = querysnapshot1.docs.map((doc, index) => ({
+          id: doc.id,
+          cred:  doc.data().credentials[0].value,
+          title: doc.data().name,
+          image: imageUrls[index]
+          }));
+
+        setAccountListFav(accs);
+            
+          
+
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+      };
+
+      fetchData();
+
+      setTimeout(() => {
+        if ( !Object.is(sectionItem, null) ) {
+          setSectionItem(
+            [
+              {
+                id: 'Favorite',
+                data: accountListFav
+              },
+              {
+                id: 'Recently Added',
+                data: accountListRecent
+              }
+            ]
+          );
+          setIsLoading(false);
+        }
+      }, 1000);
+
+      console.log(sectionItem)
+
+    }, [])
   );
 
-  const renderSectionHeader = ({ section: { title } }) => (
-    <Text style={styles.textDivider}>{title}</Text>
+  const handleAddRecord = () => {
+    console.log('Add Record')
+  }
+
+  const renderItemRecent = ({ item }) => (
+    <Pressable style={styles.rowItems} onPress={()=>{
+        navigation.navigate('AccountRecord', {id:item.id})
+      }}>
+      <Image source={{ uri: item.image }} style={{height: 40, width: 40}} resizeMode='contain'/>
+      <View>
+        <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
+        <Text style = {{fontSize: 10}}>{item.cred}</Text>
+      </View>
+    </Pressable>
   );
 
-  const renderNestedItem = (item,index,section) => (
-    <View style={styles.rowItems}>
-      <Image source={item.asset} style={{ height: 40, width: 40 }} resizeMode='contain' />
+  const renderItemFavorite = ({ item }) => (
+    <Pressable style={styles.rowItems} onPress={()=>{
+        navigation.navigate('AccountRecord', {id:item.id})
+      }}>
+      <Image source={{ uri: item.image }} style={{height: 40, width: 40}} resizeMode='contain'/>
       <View>
-        <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
-        <Text style={{ fontSize: 10 }}>{item.cred}</Text>
+        <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
+        <Text style = {{fontSize: 10}}>{item.cred}</Text>
       </View>
-    </View>
+    </Pressable>
+  );
+
+  const renderSectionHeader = ({ section: { id } }) => (
+    <Text style={styles.textDivider}>{id}</Text>
   );
 
   const handleRefresh = () => {
@@ -73,14 +177,14 @@ const HomeScreen = ({ navigation }) => {
       </View>
       <View style={styles.card}>
         <SectionList
-          sections={nestedData}
+          sections={sectionItem}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index, section}) => {
             return (
               <Pressable style={styles.rowItems} onPress={()=>{
                 navigation.navigate('AccountsRecord', item)
               }}>
-                <Image source={item.asset} style={{ height: 40, width: 40 }} resizeMode='contain' />
+                <Image source={{ uri: item.image }} style={{ height: 40, width: 40 }} resizeMode='contain' />
                 <View>
                   <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
                   <Text style={{ fontSize: 10 }}>{item.cred}</Text>
