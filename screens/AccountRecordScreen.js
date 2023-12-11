@@ -4,7 +4,7 @@ import Colors from '../components/Colors';
 import { useFocusEffect } from '@react-navigation/native'; 
 import { db, iconFiles } from '../firebaseConfig';
 import { ref, getDownloadURL } from "firebase/storage";
-import { getDocs, query, collection, where, getDoc, doc, updateDoc} from 'firebase/firestore';
+import { getDocs, query, collection, where, getDoc, doc, updateDoc, deleteDoc} from 'firebase/firestore';
 
 kebabToCapital = (kebabString) => {
   return kebabString
@@ -12,7 +12,6 @@ kebabToCapital = (kebabString) => {
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 }
-
 
 const AccountRecordScreen = ({ route, navigation }) => {
     
@@ -38,48 +37,51 @@ const AccountRecordScreen = ({ route, navigation }) => {
     });
   }
 
-  const fetchData = async () => {
-    try {
-
-      const q = doc(db, 'accounts', recordId);
-      const querysnapshot = await getDoc(q)
-
-      const imageUrl = await loadIcons(querysnapshot.data().icon);
-
-      const acc = {
-        id: querysnapshot.id,
-        creds: querysnapshot.data().credentials,
-        title: querysnapshot.data().name,
-        type: querysnapshot.data().type,
-        isFavorite: Boolean(querysnapshot.data()['is-favorite']),
-        image: imageUrl
-      }
-
-      setIsFavorite(acc.isFavorite)
-
-      setAccount(acc);   
-
-    } catch (error) {
-
-      console.error('Error fetching data:', error);
-      
-    }
-  };
-
   useFocusEffect(
     React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+    
+          console.log(recordId)
+    
+          const q = doc(db, 'accounts', recordId);
+          const querysnapshot = await getDoc(q)
+    
+          const imageUrl = await loadIcons(querysnapshot.data().icon);
+    
+          const acc = {
+            id: querysnapshot.id,
+            creds: querysnapshot.data().credentials,
+            title: querysnapshot.data().name,
+            type: querysnapshot.data().type,
+            isFavorite: Boolean(querysnapshot.data()['is-favorite']),
+            image: imageUrl
+          }
+    
+          console.log(acc)
+    
+          setIsFavorite(acc.isFavorite)
+    
+          setAccount(acc);   
+    
+        } catch (error) {
+    
+          console.error('Error fetching data:', error);
+          
+        }
+      };
+
       fetchData();
 
       console.log(account);
-
-      setTimeout(() => {
-        if ( !Object.is(account, null) ) {
-          setIsLoading(false);
-        }
-      }, 1000);
-
     }, [])
   );
+
+  setTimeout(() => {
+    if ( !Object.is(account, null) ) {
+      setIsLoading(false);
+    }
+  }, 1000);
   
   const handleFavorite = async (favorite) => {
     const docRef = doc(db, 'accounts', recordId); // Replace 'yourCollection' with the actual collection name
@@ -93,18 +95,21 @@ const AccountRecordScreen = ({ route, navigation }) => {
     }
   }
 
+  const handleDelete = async () => {
+    await deleteDoc(doc(db, "accounts", recordId))
+    navigation.goBack()
+  }
+
   return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text style={styles.headerText}>Record</Text>
-            <Pressable style={styles.addBtn} onPress={()=>{
-              navigation.navigate('Accounts')
-            }}>
+            <Pressable style={styles.addBtn} onPress={handleDelete}>
   
-              <Text style={{fontSize: 12}}>Cancel</Text>
+              <Text style={{fontSize: 12}}>Delete</Text>
   
-              <Image source={require('../assets/AddIcon.png')} resizeMode='contain' 
+              <Image source={require('../assets/Close.png')} resizeMode='contain' 
               style={{height:25, width: 25}}/>
   
             </Pressable>
@@ -112,7 +117,7 @@ const AccountRecordScreen = ({ route, navigation }) => {
         </View>
 
         <View style={styles.titleBar}>
-          <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>{kebabToCapital(account.type)}</Text>
+          <Text style={{fontSize: 15, fontWeight: 'bold', textAlign: 'center'}}>{isLoading ? '' :kebabToCapital(account.type)}</Text>
         </View>
         
         <View style={{alignItems: 'center' }}>

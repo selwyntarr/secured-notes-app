@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { db, iconFiles } from '../firebaseConfig';
 import { ref, getDownloadURL } from "firebase/storage";
 import { getDocs, query, collection, where, limit, orderBy } from 'firebase/firestore';
+
 const HomeScreen = ({ navigation }) => {
 
   const userId = '5nbfM3FhXABp5jJgo5oo';
@@ -35,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
 
         // Generate Recent List
 
-        const q_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(5));
+        const q_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(3));
         const querysnapshot_recent = await getDocs(q_recent)
         
         const imageUrls_recent = await Promise.all(
@@ -50,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
           })
         );
         
-        const q1_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(5));
+        const q1_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(3));
         const querysnapshot1_recent = await getDocs(q1_recent);
         
         const accs_recent = querysnapshot1_recent.docs.map((doc, index) => ({
@@ -59,12 +60,14 @@ const HomeScreen = ({ navigation }) => {
           title: doc.data().name,
           image: imageUrls_recent[index]
           }));
-        
+          
+        console.log(accs_recent)
+
         setAccountListRecent(accs_recent);
 
         // Generate Favorite List
 
-        const q = query(collection(db, 'accounts'), where('user-id', '==', userId), where('is-favorite', '==', true));
+        const q = query(collection(db, 'accounts'), where('user-id', '==', userId), where('is-favorite', '==', true), limit(3));
         const querysnapshot = await getDocs(q)
         
         const imageUrls = await Promise.all(
@@ -79,8 +82,8 @@ const HomeScreen = ({ navigation }) => {
           })
         );
         
-        const q1 = query(collection(db, 'accounts'), where('user-id', '==', userId), where('is-favorite', '==', true));
-        const querysnapshot1 = await getDocs(q);
+        const q1 = query(collection(db, 'accounts'), where('user-id', '==', userId), where('is-favorite', '==', true), limit(3));
+        const querysnapshot1 = await getDocs(q1);
 
         const accs = querysnapshot1.docs.map((doc, index) => ({
           id: doc.id,
@@ -89,10 +92,10 @@ const HomeScreen = ({ navigation }) => {
           image: imageUrls[index]
           }));
 
+        console.log(accs)
+
         setAccountListFav(accs);
             
-          
-
       } catch (error) {
           console.error('Error fetching data:', error);
       }
@@ -100,56 +103,32 @@ const HomeScreen = ({ navigation }) => {
 
       fetchData();
 
-      setTimeout(() => {
-        if ( !Object.is(sectionItem, null) ) {
-          setSectionItem(
-            [
-              {
-                id: 'Favorite',
-                data: accountListFav
-              },
-              {
-                id: 'Recently Added',
-                data: accountListRecent
-              }
-            ]
-          );
-          setIsLoading(false);
-        }
-      }, 1000);
-
       console.log(sectionItem)
 
     }, [])
   );
 
+  setTimeout(() => {
+    if ( !Object.is(accountListFav, null) && !Object.is(accountListRecent, null) ) {
+      setSectionItem(
+        [
+          {
+            id: 'Favorite',
+            data: accountListFav
+          },
+          {
+            id: 'Recently Added',
+            data: accountListRecent
+          }
+        ]
+      );
+      setIsLoading(false);
+    }
+  }, 10000);
+
   const handleAddRecord = () => {
     console.log('Add Record')
   }
-
-  const renderItemRecent = ({ item }) => (
-    <Pressable style={styles.rowItems} onPress={()=>{
-        navigation.navigate('AccountRecord', {id:item.id})
-      }}>
-      <Image source={{ uri: item.image }} style={{height: 40, width: 40}} resizeMode='contain'/>
-      <View>
-        <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
-        <Text style = {{fontSize: 10}}>{item.cred}</Text>
-      </View>
-    </Pressable>
-  );
-
-  const renderItemFavorite = ({ item }) => (
-    <Pressable style={styles.rowItems} onPress={()=>{
-        navigation.navigate('AccountRecord', {id:item.id})
-      }}>
-      <Image source={{ uri: item.image }} style={{height: 40, width: 40}} resizeMode='contain'/>
-      <View>
-        <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
-        <Text style = {{fontSize: 10}}>{item.cred}</Text>
-      </View>
-    </Pressable>
-  );
 
   const renderSectionHeader = ({ section: { id } }) => (
     <Text style={styles.textDivider}>{id}</Text>
@@ -176,13 +155,16 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </View>
       <View style={styles.card}>
+      {isLoading ? (
+        <Text style={{ textAlign: 'center' }}>Loading</Text>
+              ) : (
         <SectionList
           sections={sectionItem}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index, section}) => {
             return (
               <Pressable style={styles.rowItems} onPress={()=>{
-                navigation.navigate('AccountsRecord', item)
+                navigation.navigate('AccountsRecord', {id:item.id})
               }}>
                 <Image source={{ uri: item.image }} style={{ height: 40, width: 40 }} resizeMode='contain' />
                 <View>
@@ -194,7 +176,9 @@ const HomeScreen = ({ navigation }) => {
           }}
           renderSectionHeader={renderSectionHeader}
         />
+        )}
       </View>
+              
     </SafeAreaView>
   );
 };

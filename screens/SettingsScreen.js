@@ -4,16 +4,18 @@ import Colors from '../components/Colors';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from '../firebaseConfig'; 
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { useFocusEffect } from '@react-navigation/native'; 
 
 const SettingsScreen = ({ navigation }) => {
 
-  const [name, setName] = useState('John Doe');
-  const [email, setEmail] = useState('john.doe@example.com');
-  const [username, setUsername] = useState('johndoe');
-  const [password, setPassword] = useState('securepassword');
-  const [confirmpassword, setConfirmPassword] = useState('securepassword');
+  const userId = '5nbfM3FhXABp5jJgo5oo';
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleChange = ({input,type}) => {
     if (type === 'name'){
@@ -34,15 +36,19 @@ const SettingsScreen = ({ navigation }) => {
       const fetchData = async () => {
         try {
           // Your asynchronous code goes here
-          const user = await AsyncStorage.getItem('user-session');
-          const userData = JSON.parse(user);
+          // const user = await AsyncStorage.getItem('user-session');
+          // const userData = JSON.parse(user);
+
+          const user = doc(db, 'users', userId)
+          const userQ = await getDoc(user)
+          const userData = userQ.data()
+
           if (userData !== null){
-            if ( inputName === '' || inputAge === '' || inputContact === '' || inputEmail === '' || inputAddress === '') {
-              // setInputName(userData.name)
-              // setInputAge(String(userData.age))
-              // setInputContact(userData.contact)
-              // setInputEmail(userData.email)
-              // setInputAddress(userData.address)
+            if ( name === '' || email === '' || username === '' || password === '' || confirmPassword === '') {
+              setName(userData.name)
+              setEmail(userData.email)
+              setUsername(userData.username)
+              setPassword(userData.password)
             }
           }
         } catch (error) {
@@ -72,6 +78,15 @@ const SettingsScreen = ({ navigation }) => {
   const [confirmVisible, setconfirmVisible] = useState(false);
 
   const handleEdit = () => {
+    if (confirmVisible === true && password === confirmPassword){
+      const user = doc(db, 'users', userId)
+      setDoc(user, {
+        "name": name,
+        "email": email,
+        "username": username,
+        "password": password
+      })
+    }
     setconfirmVisible(!confirmVisible)
   }
 
@@ -85,7 +100,7 @@ const SettingsScreen = ({ navigation }) => {
 
             <Text style={{fontSize: 12}}>Logout</Text>
 
-            <Image source={require('../assets/AddIcon.png')} resizeMode='contain' 
+            <Image source={require('../assets/turnoff.png')} resizeMode='contain' 
             style={{height:25, width: 25}}/>
 
           </Pressable>
@@ -126,7 +141,7 @@ const SettingsScreen = ({ navigation }) => {
           <View style={{... styles.input_box, flexDirection: 'row', 
                             justifyContent: 'space-between', gap: 10, 
                             display: confirmVisible? null : 'none'}}>
-            <TextInput value = {confirmpassword} placeholder="Confirm Password" secureTextEntry={!isPasswordVisible2} 
+            <TextInput value = {confirmPassword} placeholder="Confirm Password" secureTextEntry={!isPasswordVisible2} 
               multiline={false} style={{...styles.input, flex: 1}} onChangeText={(text) => handleChange({input: text, type: 'confirm-password'})}/>
             <TouchableOpacity
               onPress={togglePasswordVisibility2}

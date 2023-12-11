@@ -37,7 +37,7 @@ const AddRecordsScreen = ({ navigation }) => {
                 <Image source={require('../assets/banks/SecurityBank.png')} style={{height:65,width: 65}} resizeMode='contain'/>
             </View>
             <Pressable style={styles.btn} onPress={()=>{
-              navigation.navigate('AccountRecordInput', {type: 'Banco De Oro', data: 
+              navigation.navigate('AccountRecordInput', {type: 'Bank', data: 
               [{ label: 'Banco De Oro', value: 'Banco De Oro' },
               { label: 'Union Bank', value: 'Union Bank' },
               { label: 'Land Bank', value: 'Land Bank' },
@@ -55,7 +55,7 @@ const AddRecordsScreen = ({ navigation }) => {
             <Image source={require('../assets/Socials/Twitter.png')} style={{height:65,width: 65}} resizeMode='contain'/>
           </View>
           <Pressable style={styles.btn}onPress={()=>{
-              navigation.navigate('AccountRecordInput', {type: 'Facebook', data: 
+              navigation.navigate('AccountRecordInput', {type: 'Account', data: 
               [{ label: 'Facebook', value: 'Facebook' },
               { label: 'Instagram', value: 'Instagram' },
               { label: 'Gmail', value: 'Gmail' },
@@ -73,7 +73,7 @@ const AddRecordsScreen = ({ navigation }) => {
             <Image source={require('../assets/Others/PhilHealth.png')} style={{height:65,width: 65}} resizeMode='contain'/>
           </View>
             <Pressable style={styles.btn}onPress={()=>{
-              navigation.navigate('AccountRecordInput', {type: 'Gcash', data: 
+              navigation.navigate('AccountRecordInput', {type: 'Others', data: 
               [{ label: 'Gcash', value: 'Gcash' },
               { label: 'Maya', value: 'Maya' },
               { label: 'Pagibig', value: 'Pagibig' },

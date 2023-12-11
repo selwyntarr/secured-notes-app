@@ -1,24 +1,91 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, Image, View, Text, StyleSheet, SafeAreaView, Pressable, TextInput } from 'react-native';
 import Colors from '../components/Colors';
+import { useFocusEffect } from '@react-navigation/native'; 
+import { db, iconFiles } from '../firebaseConfig';
+import { ref, getDownloadURL } from "firebase/storage";
+import { getDocs, query, collection, where, limit, orderBy } from 'firebase/firestore';
 
 const SearchScreen = ({ navigation }) => {
 
-  const handleAddRecord = () => {
+  const userId = '5nbfM3FhXABp5jJgo5oo';
+
+  const [accountList, setAccountList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+
+  const loadIcons = (path) => {
+    return new Promise((resolve, reject) => {
+      getDownloadURL(ref(iconFiles, path))
+        .then((url) => {
+          resolve(url);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+  }
+
+  useFocusEffect(
+    React.useCallback(() => {
+
+      const fetchData = async () => {
+      try {
+
+        // Generate Recent List
+
+        const q = query(collection(db, 'accounts'), where('user-id', '==', userId), limit(5));
+        const querysnapshot = await getDocs(q)
+        
+        const imageUrls = await Promise.all(
+          querysnapshot.docs.map(async (doc) => {
+            const path = doc.data().icon;
+            try {
+              return await loadIcons(path);
+            } catch (error) {
+              console.error(`Error loading image for ${path}:`, error);
+              return null; // or handle the error in a different way
+            }
+          })
+        );
+        
+        const q1 = query(collection(db, 'accounts'), where('user-id', '==', userId), limit(5));
+        const querysnapshot1 = await getDocs(q1);
+        
+        const accs = querysnapshot1.docs.map((doc, index) => ({
+          id: doc.id,
+          cred:  doc.data().credentials[0].value,
+          title: doc.data().name,
+          image: imageUrls[index]
+          }));
+        
+        setAccountList(accs);
+            
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+      };
+
+      fetchData();
+
+    }, [])
+  );
+
+  setTimeout(() => {
+    if ( !Object.is(accountList, null) ) {
+      setIsLoading(false);
+    }
+  }, 10000);
+
+  const handleRefresh = () => {
     console.log('Add Record')
   }
 
-  const data = [
-    { id: '1', cred: "5434 5345 2312 4124",pass: '123123', title: 'Banco De Oro', asset: require('../assets/BDO.png') },
-    { id: '2', cred: "John.Doe@gmail.com",pass: '123123', title: 'Gmail', asset: require('../assets/gmail.png') },
-    { id: '3', cred: "John.Doe@facebook.com",pass: '123123', title: 'Facebook', asset: require('../assets/Facebook.png') },
-  ];
-
   const renderItem = ({ item }) => (
     <Pressable style={styles.rowItems} onPress={()=>{
-      navigation.navigate('AccountsRecord', item)
+      navigation.navigate('AccountsRecord', {id:item.id})
     }}>
-      <Image source={item.asset} style={{height: 40, width: 40}} resizeMode='contain'/>
+      <Image source={{ uri: item.image }} style={{height: 40, width: 40}} resizeMode='contain'/>
       <View>
         <Text style = {{fontWeight: 'bold'}}>{item.title}</Text>
         <Text style = {{fontSize: 10}}>{item.cred}</Text>
@@ -31,13 +98,13 @@ const SearchScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text style={styles.headerText}>Search</Text>
-          <Pressable style={styles.addBtn} onPress={handleAddRecord}>
-
-            <Text style={{fontSize: 12}}>Add Record</Text>
-
-            <Image source={require('../assets/AddIcon.png')} resizeMode='contain' 
-            style={{height:25, width: 25}}/>
-
+          <Pressable style={styles.addBtn} onPress={handleRefresh}>
+            <Text style={{ fontSize: 12 }}>Search</Text>
+            <Image
+              source={require('../assets/Search.png')}
+              resizeMode='contain'
+              style={{ height: 25, width: 25 }}
+            />
           </Pressable>
         </View>
       </View>
@@ -46,7 +113,7 @@ const SearchScreen = ({ navigation }) => {
       </View>
       <View style={styles.card}>
         <FlatList
-          data={data}
+          data={accountList}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />
