@@ -51,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
           })
         );
         
-        const q1_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date_added", "desc"), limit(3));
+        const q1_recent = query(collection(db, 'accounts'), where('user-id', '==', userId), orderBy("date-added", "desc"), limit(3));
         const querysnapshot1_recent = await getDocs(q1_recent);
         
         const accs_recent = querysnapshot1_recent.docs.map((doc, index) => ({
